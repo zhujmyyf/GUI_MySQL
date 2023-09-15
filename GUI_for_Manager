@@ -1,0 +1,206 @@
+import tkinter
+import localhost
+import tkinter.messagebox
+
+class SearchApp:
+
+    def __init__(self):
+        self.root = tkinter.Tk()
+        self.root.title("搜索工具")
+        self.root.geometry("400x400")
+
+        self.search_entry = tkinter.Entry(self.root) # 添加输入框
+        self.search_entry.pack()
+        self.result_label = tkinter.Label(self.root)  # 显示搜索框标题
+        self.result_label.pack()
+
+        search_button = tkinter.Button(self.root, text="搜索", command=self.search)  # 添加一个搜索按钮
+        search_button.pack()
+        # 添加一个插入数据的按钮
+        insert_button = tkinter.Button(self.root, text="插入数据", command=self.insert)  # 添加一个添加数据按钮
+        insert_button.pack()
+
+        delete_button = tkinter.Button(self.root, text="删除数据", command=self.delete)  # 添加一个删除数据按钮
+        delete_button.pack()
+
+        update_button = tkinter.Button(self.root, text="替换数据", command=self.update)  # 添加一个修改数据按钮
+        update_button.pack()
+
+    def islegal2(self, id, name):
+        if id.isdigit() and name.isalpha():
+            return True
+        else:
+            return False
+
+    def islegal3(self, id, name, method):
+        if id.isdigit() and name.isalpha() and  method.isalnum():
+            return True
+        else:
+            return False
+
+    def update(self):
+        window = tkinter.Toplevel(self.root)
+        window.title("修改数据")
+        window.geometry("400x400")
+
+        # 创替目标数据进入框
+        tips = tkinter.Label(window, text="请先确认目标存在再进行修改，注意：无法修改ID")
+        id_validate = tkinter.Label(window, text="目标ID")
+        id_validate_entry = tkinter.Entry(window)
+
+        name_validate = tkinter.Label(window, text="目标Name")
+        name_validate_entry = tkinter.Entry(window)
+
+        # 输入替换源数据
+        id = tkinter.Label(window, text="ID")
+        id_entry = tkinter.Entry(window)
+
+        name = tkinter.Label(window, text="Name")
+        name_entry = tkinter.Entry(window)
+
+        method = tkinter.Label(window, text="Method")
+        method_entry = tkinter.Entry(window)
+
+        def get_update_new_data_input():  # 更新目标源数据
+            # id_validate = id_validate_entry.get()
+            id_upadate_value = id_entry.get()
+            name_upadate_value = name_entry.get()
+            method_upadate_value = method_entry.get()
+
+            if self.islegal3(id_upadate_value, name_upadate_value, method_upadate_value):
+                localhost.update(id_upadate_value, name_upadate_value, method_upadate_value)
+                print("这是合法的数据",id_upadate_value, name_upadate_value, method_upadate_value)
+
+            else:
+                print("这不是合法的数据")
+                return
+
+        def check_data():  # 更新目标源数据
+            id_validate = id_validate_entry.get()
+            name_validate = name_validate_entry.get()
+
+            if self.islegal2(id_validate, name_validate):
+                localhost.check_id_name_existence(id_validate, name_validate)
+                print("数据合法")
+            else:
+                print("这不是合法的数据")
+                return
+
+        Update_NewData_Button = tkinter.Button(window, text="替换数据", command=get_update_new_data_input)
+        Update_check_Button = tkinter.Button(window, text="检查数据", command=check_data)
+
+        tips.pack()
+        id_validate.pack()
+        id_validate_entry.pac
+        name_validate.pack()
+        name_validate_entry.pack()
+        Update_NewData_Button.pack()
+
+        id.pack()
+        id_entry.pack()
+        name.pack()
+        name_entry.pack()
+        method.pack()
+        method_entry.pack()
+        Update_check_Button.pack()
+
+    def delete(self):
+        window = tkinter.Toplevel(self.root)
+        window.title("删除数据")
+        window.geometry("400x400")
+
+        # 创删除数据进入框
+        id = tkinter.Label(window, text="ID")
+        id_entry = tkinter.Entry(window)
+        id.pack()
+        id_entry.pack()
+
+        name = tkinter.Label(window, text="Name")
+        name_entry = tkinter.Entry(window)
+        name.pack()
+        name_entry.pack()
+
+        def get_input():
+            id = id_entry.get()
+            name = name_entry.get()
+            # 判断这两两是否合法
+            if islegal(id, name):
+                localhost.delete(id, name)
+                print("输入合法")
+                tkinter.messagebox.showinfo("删除成功", "删除成功")
+            else:
+                print("输入不合法")
+                tkinter.messagebox.showinfo("删除失败", "删除失败")
+
+        delete_data_button = tkinter.Button(window, text="删除数据", command=get_input)  # 添加一个添加数据按钮
+        delete_data_button.pack()
+
+        # 组件定位
+        def islegal(id, name):
+            if id.isdigit() and name.isalpha():
+                return True
+            else:
+                return False
+
+    def search(self):
+        search_text = self.search_entry.get()  # 获取文本框的内容
+        print(f"正在搜索:{search_text}")
+        if search_text:
+            result = localhost.search(search_text)
+            self.result_label["text"] = f"搜索结果:{result}"  # result为处理过的结果，使用label显示
+
+    def insert(self):
+        window = tkinter.Toplevel(self.root)
+        window.title("插入数据")
+        window.geometry("400x400")
+
+        # 创建数据标签与输入框
+        id = tkinter.Label(window, text="ID")
+        id_entry = tkinter.Entry(window)
+        id.pack()
+        id_entry.pack()
+
+        name = tkinter.Label(window, text="Name")
+        name_entry = tkinter.Entry(window)
+        name.pack()
+        name_entry.pack()
+
+        method = tkinter.Label(window, text="Method")
+        method_entry = tkinter.Entry(window)
+        method.pack()
+        method_entry.pack()
+
+        # 组件布局代码
+        def islegal(id, name, method):
+            if id.isdigit() and name.isalpha() and method.isalnum():
+                return True
+            else:
+                return False
+
+        def get_input():
+            id = id_entry.get()
+            name = name_entry.get()
+            method = method_entry.get()
+            # 判断输入的id name method 是否符合要求
+            if islegal(id, name, method):
+                print("输入完成！")
+            else:
+                print("这不是合法的数据,请重新输入")
+                tkinter.messagebox.showinfo("插入失败", "这不是合法的数据,这不是合法的数据,这不是合法的数据")
+                return
+
+            # 将数据传入insert，在insert中判断和处理后，传入数据库
+            localhost.insert(id, name, method)
+
+            window.destroy()
+
+        btn = tkinter.Button(window, text="插入", command=get_input)
+        btn.pack()
+
+    def run(self):
+        self.root.mainloop()
+
+
+app = SearchApp()
+app.run()
+
