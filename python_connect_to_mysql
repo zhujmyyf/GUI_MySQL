@@ -1,0 +1,86 @@
+import pymysql
+import tkinter
+
+
+conn = pymysql.connect(host='localhost', user='root', passwd='root', db='test')
+
+cur = conn.cursor()
+
+
+def delete(id, name):
+    # 指定表
+    cur.execute("use test")
+
+    sql = "DELETE FROM users WHERE id = %s AND name = %s"
+    cur.execute(sql, (id, name))
+
+    conn.commit()
+
+
+def search(text):
+    # 指定表
+    cur.execute("use test")
+
+    sql = "SELECT * FROM users WHERE name LIKE CONCAT('%%', %s, '%%')"
+    # sql = "SELECT * FROM users WHERE * IS NOT NULL AND name LIKE CONCAT('%%', %s, '%%')"
+    cur.execute(sql, (text,))
+
+    result = cur.fetchall()
+    # 取出元组中method这个列
+    result = [row[2] for row in result]
+    return result
+
+
+def check_id_name_existence(id, name):
+    # 指定表
+    cur.execute("use test")
+
+    sql = "SELECT * FROM users WHERE id = %s AND name = %s"
+    cur.execute(sql, (id, name))
+
+    result = cur.fetchall()
+    if cur.rowcount == 0:
+        tkinter.messagebox.showinfo("id,name不存在或不匹配")
+        return False
+    else:
+        tkinter.messagebox.showinfo("id,name存在且匹配")
+        return True
+
+
+def update( id, name, method):
+    # 指定表
+    cur.execute("use test")
+
+    sql = "UPDATE users SET name=%s, method=%s WHERE id=%s"
+    cur.execute(sql, (name, method, id))
+    tkinter.messagebox.showinfo("替换成功", "替换成功")
+
+    conn.commit()
+
+
+def insert(id, name, method):
+    # 指定表
+    cur.execute("use test")
+
+    sql = "SELECT id FROM users WHERE id=%s"
+    cur.execute(sql, (id,))
+    if cur.rowcount == 0:
+        # id不存在,执行插入
+        sql = "INSERT INTO users (id, name, method) VALUES (%s, %s, %s)"
+        cur.execute(sql, (id, name, method))
+        tkinter.messagebox.showinfo("插入成功", "插入成功")
+
+    else:
+        print(f"id {id} already exists")
+        tkinter.messagebox.showinfo("插入失败", "id已经存在，这不是合法的数据")
+
+    conn.commit()
+
+
+# # 测试模糊搜索
+# text = 'ac'
+# # cur.execute("select * from users where name like '%ac%'" )
+# sql = "SELECT * FROM users WHERE name LIKE CONCAT('%%', %s, '%%')"
+# cur.execute(sql, (text,))
+# result = cur.fetchall()
+# print(result)
